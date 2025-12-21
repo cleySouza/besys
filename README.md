@@ -155,7 +155,3 @@ Cliente → Escolhe serviço → Seleciona data
 * [ ] 🏢 Multi-tenancy completo (schema por empresa)
 * [ ] 🌐 CDN para assets
 * [ ] ⚡ Cache Redis
-
----
-
-Se quiser, posso gerar uma **versão ilustrada**, **dark mode**, **com ícones grandes**, ou **com tabelas e diagramas avançados**.
