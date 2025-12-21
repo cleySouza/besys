@@ -2,6 +2,7 @@
   "name": "besys",
   "private": true,
   "scripts": {
+    "dev:apps": "turbo run dev --parallel --filter=apps/*",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
