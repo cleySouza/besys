@@ -2,7 +2,11 @@
 
 ## 🚀 1. Visão Geral
 
-O **beSyS** é um ecossistema modular para gestão comercial, composto por múltiplos apps, backend robusto e pacotes compartilhados — tudo organizado em um **Monorepo Turborepo**. A arquitetura foi pensada para ser:
+O **beSyS** é um **SaaS modular para bares e restaurantes**, cobrindo operação interna, atendimento ao cliente e gestão administrativa.
+
+O ecossistema é composto por **4 aplicações principais**, um **backend centralizado** e **pacotes compartilhados**, organizados em um **Monorepo com Turborepo**.
+
+A arquitetura foi desenhada para ser:
 
 * 🔌 **Modular**
 * 📈 **Escalável**
@@ -14,54 +18,59 @@ O **beSyS** é um ecossistema modular para gestão comercial, composto por múlt
 ## 🏗️ 2. Arquitetura de Alto Nível
 
 ```
-                 ┌────────────────────┐
-                 │  🌐 Portal Cliente │
-                 │       (App 2)      │
-                 └─────────┬──────────┘
-                           |
-                           v
-┌────────────────┐     ┌────────────────┐
-│ 🖥️ Admin / PDV │ --> │ ⚙️ Backend API  │ --> 🗄️ PostgreSQL
-│     (App 1)    │     │    (NestJS)    │
-└──────┬─────────┘     └────────────────┘
-       |                     ▲
-       └─────────────────────┘
+                     ┌────────────────────┐
+                     │ 🌐 Client Web       │
+                     │ (Cliente Final)    │
+                     └─────────┬──────────┘
+                               │
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌──────────────┐     ┌────────────────┐     ┌──────────────────┐
+│ 📱 Waiter App│     │ 🖥️ Admin / PDV │     │ ⚙️ Backend API   │
+│ React Native │ ──▶ │   Next.js      │ ──▶ │   NestJS         │ ──▶ 🗄️ PostgreSQL
+└──────────────┘     └────────────────┘     └──────────────────┘
+                              ▲
+                              └──────── WebSockets (futuro)
 ```
 
-**Componentes:**
+### Componentes
 
-* 🖥️ **App 1 (Admin/PDV)** → consumo de rotas autenticadas + envio de eventos.
-* 📱 **App 2 (Cliente)** → pedidos, agendamentos e retornos.
-* ⚙️ **Backend** → núcleo das regras de negócio e persistência.
-* 🗄️ **PostgreSQL** → banco relacional principal.
+* 🖥️ **Admin / PDV (Web)** → gestão, caixa, pedidos e relatórios
+* 🌐 **Client Web** → cardápio, pedidos e acompanhamento
+* 📱 **Waiter App** → criação e gestão de pedidos em salão
+* ⚙️ **Backend (NestJS)** → regras de negócio, segurança e persistência
+* 🗄️ **PostgreSQL** → banco relacional principal
 
 ---
 
 ## 📦 3. Monorepo com Turborepo
 
-Estrutura:
+Estrutura oficial do projeto:
 
 ```
 besys/
 ├─ apps/
-│  ├─ admin/
-│  ├─ client/
-│  └─ backend/
+│  ├─ admin/      # Next.js (Admin / PDV)
+│  ├─ client/     # Next.js (Cliente final)
+│  ├─ waiter/     # React Native CLI (Garçom)
+│  └─ backend/    # NestJS API
 ├─ packages/
-│  ├─ ui/
-│  ├─ api-types/
-│  ├─ config/
-│  ├─ tsconfig/
-│  └─ eslint/
+│  ├─ shared-types   # Tipagens compartilhadas
+│  ├─ ui             # Componentes reutilizáveis
+│  ├─ config         # Configurações globais
+│  ├─ tsconfig
+│  └─ eslint
 └─ turbo.json
 ```
 
 ### 🎯 Benefícios do Monorepo
 
-* ♻️ **Reutilização de UI, tipagens e configs**
-* ⚡ **Builds otimizados com cache**
-* 🧹 **Padronização total (eslint, tsconfig, libs)**
-* 🧱 **Arquitetura limpa entre apps e pacotes**
+* ♻️ **Reuso de tipagens, contratos e configs**
+* ⚡ **Builds e dev otimizados via cache**
+* 🧱 **Padronização total entre apps**
+* 🧠 **Evolução coordenada do produto**
 
 ---
 
@@ -69,41 +78,43 @@ besys/
 
 ### 4.1 🌐 REST API
 
-* Endpoints seguem padrão: `/api/v1/...`
-* Controllers modulares por domínio
+* Padrão `/api/v1/...`
+* Controllers por domínio
+* DTOs + validação
 
-### 4.2 🔌 WebSockets *(futuro)*
+### 4.2 🔌 WebSockets *(roadmap)*
 
-* Eventos em tempo real:
+Eventos em tempo real:
 
-  * 🧾 Pedidos
-  * 💰 Caixa
-  * 📅 Agenda
+* 🧾 Pedidos
+* 💰 Caixa
+* 📅 Agendamentos
+* 🔔 Notificações para Garçom
 
 ---
 
 ## 🛡️ 5. Segurança da Arquitetura
 
-* 🔑 **JWT + Refresh Token**
-* 🧩 **RBAC com roles e guards**
-* 🛁 **Sanitização e validações**
-* 🚧 **Rate limit + CORS configurado**
+* 🔑 JWT + Refresh Token
+* 🧩 RBAC (admin, employee, client)
+* 🛁 Validação e sanitização
+* 🚧 Rate limiting + CORS
 
 ---
 
-## 🗄️ 6. Banco de Dados (Prisma)
+## 🗄️ 6. Banco de Dados (Prisma ORM)
 
-Modelo principal:
+Modelo conceitual:
 
 ```
-User -- Company -- Product -- Order -- OrderItem
-                      |          └─ CashRegister
+User ── Company ── Product ── Order ── OrderItem
+                    │             └─ CashRegister
               Appointment
 ```
 
-* 🟦 **Prisma ORM**
+* 🟦 Prisma ORM
 * 🧬 Migrations versionadas
-* 📊 Relacionamentos claros e escaláveis
+* 📊 Relacionamentos explícitos
 
 ---
 
@@ -112,20 +123,20 @@ User -- Company -- Product -- Order -- OrderItem
 ### 7.1 🛒 Venda no PDV
 
 ```
-Operador → Seleciona itens → Envia venda
-       → API registra → Caixa atualiza
+Admin / Garçom → cria pedido → API valida
+             → Caixa atualiza → Status sincronizado
 ```
 
 ### 7.2 📦 Pedido do Cliente
 
 ```
-Cliente → Pedido → API → Notificação PDV → Confirmação
+Cliente → Pedido → API → PDV / Garçom → Confirmação
 ```
 
 ### 7.3 📅 Agendamento
 
 ```
-Cliente → Escolhe serviço → Seleciona data
+Cliente → Seleciona serviço → Escolhe data
        → API valida → PDV aprova
 ```
 
@@ -135,23 +146,24 @@ Cliente → Escolhe serviço → Seleciona data
 
 ### ⚙️ Backend
 
-* 🐳 Docker + PostgreSQL
-* 🔄 CI/CD com GitHub Actions
+* 🐳 Docker
+* 🔄 CI/CD (GitHub Actions)
 
 ### 🎨 Frontends
 
-* 🖥️ Admin → Vercel / Netlify
-* 📱 Cliente → Vercel (web) / Play Store / TestFlight
+* 🖥️ Admin / Client Web → Vercel
+* 📱 Waiter → Play Store / TestFlight
 
-### 🗄️ Banco
+### 🗄️ Banco de Dados
 
-* Railway / Render / Supabase / AWS RDS
+* Railway / Supabase / AWS RDS
 
 ---
 
 ## 🧭 9. Roadmap de Arquitetura
 
-* [ ] 📡 Mensageria (Kafka / NATS)
-* [ ] 🏢 Multi-tenancy completo (schema por empresa)
-* [ ] 🌐 CDN para assets
+* [ ] 📡 WebSockets (tempo real)
+* [ ] 🏢 Multi-tenancy (schema por empresa)
 * [ ] ⚡ Cache Redis
+* [ ] 📥 Filas (BullMQ / Redis)
+* [ ] 📊 Observabilidade (logs, métricas)
