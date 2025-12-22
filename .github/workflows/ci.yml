@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Lint and build
+    name: Lint, test and build
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +25,9 @@ jobs:
 
       - name: Run lint
         run: npm run lint
+
+      - name: Run tests with coverage
+        run: npm run test:cov
 
       - name: Run build
         run: npm run build

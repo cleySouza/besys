@@ -5,6 +5,8 @@
     "dev:apps": "turbo run dev --parallel --filter=apps/*",
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:cov": "turbo run test:cov",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types"

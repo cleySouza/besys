@@ -16,6 +16,16 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*", "vitest.config.*"],
+      "outputs": []
+    },
+    "test:cov": {
+      "dependsOn": ["^test:cov"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*", "jest.config.*", "vitest.config.*"],
+      "outputs": []
     }
   }
 }
