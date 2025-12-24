@@ -8,10 +8,16 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UsersModule, AuthModule, CompaniesModule, PrismaModule, ConfigModule.forRoot({
-    isGlobal: true,
-    envFilePath: '.env',
-  })],
+  imports: [
+    UsersModule,
+    AuthModule,
+    CompaniesModule,
+    PrismaModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
