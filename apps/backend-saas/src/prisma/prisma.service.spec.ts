@@ -5,8 +5,20 @@ describe('PrismaService', () => {
   let service: PrismaService;
 
   beforeEach(async () => {
+    const mockPrismaService = {
+      $connect: jest.fn(),
+      $disconnect: jest.fn(),
+      onModuleInit: jest.fn(),
+      onModuleDestroy: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
-      providers: [PrismaService],
+      providers: [
+        {
+          provide: PrismaService,
+          useValue: mockPrismaService,
+        },
+      ],
     }).compile();
 
     service = module.get<PrismaService>(PrismaService);
