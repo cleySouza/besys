@@ -23,6 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma Client
+        run: |
+          cd apps/backend-saas
+          npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://test:test@localhost:5432/test"
+
       - name: Run lint
         run: npm run lint
 
